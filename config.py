@@ -1,66 +1,140 @@
-# Jinni Configuration File
 import os
-from datetime import timedelta
+import yaml
+from dotenv import load_dotenv
+
+# 1. Sabse pehle .env file se secret keys ko memory me load karein
+load_dotenv()
 
 class Config:
-    # Application Settings
-    APP_NAME = "Jinni Indian Stock Market AI"
-    VERSION = "1.0.0"
-    DEBUG = os.getenv('DEBUG', 'False') == 'True'
-    
-    # Data Fetching
-    NSE_BASE_URL = "https://www.nseindia.com"
-    BSE_BASE_URL = "https://www.bseindia.com"
-    DATA_FETCH_INTERVAL = 60
-    
-    # Machine Learning
-    ML_MODEL_PATH = "models/"
-    LSTM_UNITS = 128
-    LSTM_SEQUENCE_LENGTH = 60
-    GRU_UNITS = 128
-    BATCH_SIZE = 32
-    EPOCHS = 50
-    
-    # Online Learning
-    ONLINE_LEARNING_ENABLED = True
-    INCREMENTAL_UPDATE_INTERVAL = 1
-    ACCURACY_THRESHOLD = 0.85
-    
-    # Database
-    DB_TYPE = os.getenv('DB_TYPE', 'sqlite')
-    DB_PATH = os.getenv('DB_PATH', 'jinni_data.db')
-    POSTGRES_HOST = os.getenv('POSTGRES_HOST', 'localhost')
-    POSTGRES_PORT = os.getenv('POSTGRES_PORT', 5432)
-    POSTGRES_USER = os.getenv('POSTGRES_USER', 'jinni')
-    POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', '')
-    POSTGRES_DB = os.getenv('POSTGRES_DB', 'jinni_db')
-    
-    # Dashboard
-    DASHBOARD_PORT = int(os.getenv('DASHBOARD_PORT', 8501))
-    DASHBOARD_UPDATE_INTERVAL = 5
-    
-    # Analytics
-    TECHNICAL_INDICATORS = ['SMA', 'EMA', 'RSI', 'MACD', 'BB']
-    RISK_ANALYSIS_ENABLED = True
-    PORTFOLIO_OPTIMIZATION_ENABLED = True
-    
-    # Logging
-    LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
-    LOG_FILE = 'jinni.log'
-    
-    # Performance
-    MAX_WORKERS = int(os.getenv('MAX_WORKERS', 4))
-    CACHE_ENABLED = True
-    CACHE_TTL = 300
-    
-    # API Keys (if needed)
-    NSE_API_KEY = os.getenv('NSE_API_KEY', '')
-    BSE_API_KEY = os.getenv('BSE_API_KEY', '')
-    
-    @classmethod
-    def get_db_url(cls):
-        if cls.DB_TYPE == 'postgres':
-            return f"postgresql://{cls.POSTGRES_USER}:{cls.POSTGRES_PASSWORD}@{cls.POSTGRES_HOST}:{cls.POSTGRES_PORT}/{cls.POSTGRES_DB}"
-        return f"sqlite:///{cls.DB_PATH}"
+    def __init__(self, config_path="config.yaml"):
+        # Check karein ki YAML file folder me hai ya nahi
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"Config file nahi mili: {config_path}")
+            
+        # YAML file ko open aur read karein
+        with open(config_path, 'r') as file:
+            self._config = yaml.safe_load(file)
 
+    # Application Settings
+    @property
+    def APP_NAME(self): return self._config.get('app_name', 'Jinni Indian Stock Market AI')
+    
+    @property
+    def VERSION(self): return self._config.get('version', '1.0.0')
+    
+    @property
+    def DEBUG(self): return self._config.get('debug', False)
+
+    # Data Fetching
+    @property
+    def NSE_BASE_URL(self): return self._config.get('nse_base_url', 'https://nseindia.com')
+    
+    @property
+    def BSE_BASE_URL(self): return self._config.get('bse_base_url', 'https://bseindia.com')
+    
+    @property
+    def DATA_FETCH_INTERVAL(self): return self._config.get('data_fetch_interval', 60)
+
+    # Machine Learning
+    @property
+    def ML_MODEL_PATH(self): return self._config.get('ml_model_path', 'models/')
+    
+    @property
+    def LSTM_UNITS(self): return self._config.get('lstm_units', 128)
+    
+    @property
+    def LSTM_SEQUENCE_LENGTH(self): return self._config.get('lstm_sequence_length', 60)
+    
+    @property
+    def GRU_UNITS(self): return self._config.get('gru_units', 128)
+    
+    @property
+    def BATCH_SIZE(self): return self._config.get('batch_size', 32)
+    
+    @property
+    def EPOCHS(self): return self._config.get('epochs', 50)
+
+    # Online Learning
+    @property
+    def ONLINE_LEARNING_ENABLED(self): return self._config.get('online_learning_enabled', True)
+    
+    @property
+    def INCREMENTAL_UPDATE_INTERVAL(self): return self._config.get('incremental_update_interval', 1)
+    
+    @property
+    def ACCURACY_THRESHOLD(self): return self._config.get('accuracy_threshold', 0.85)
+
+    # Database
+    @property
+    def DB_TYPE(self): return self._config.get('db_type', 'sqlite')
+    
+    @property
+    def DB_PATH(self): return self._config.get('db_path', 'jinni_data.db')
+    
+    @property
+    def POSTGRES_HOST(self): return self._config.get('postgres_host', 'localhost')
+    
+    @property
+    def POSTGRES_PORT(self): return self._config.get('postgres_port', 5432)
+    
+    @property
+    def POSTGRES_USER(self): return self._config.get('postgres_user', 'jinni')
+    
+    @property
+    def POSTGRES_PASSWORD(self): return self._config.get('postgres_password', '')
+    
+    @property
+    def POSTGRES_DB(self): return self._config.get('postgres_db', 'jinni_db')
+
+    # Dashboard
+    @property
+    def DASHBOARD_PORT(self): return self._config.get('dashboard_port', 8501)
+    
+    @property
+    def DASHBOARD_UPDATE_INTERVAL(self): return self._config.get('dashboard_update_interval', 5)
+
+    # Analytics (Yahan se automatic list load hogi)
+    @property
+    def TECHNICAL_INDICATORS(self): return self._config.get('technical_indicators', ['SMA', 'EMA', 'RSI', 'MACD', 'BB'])
+    
+    @property
+    def RISK_ANALYSIS_ENABLED(self): return self._config.get('risk_analysis_enabled', True)
+    
+    @property
+    def PORTFOLIO_OPTIMIZATION_ENABLED(self): return self._config.get('portfolio_optimization_enabled', True)
+
+    # Logging
+    @property
+    def LOG_LEVEL(self): return self._config.get('log_level', 'INFO')
+    
+    @property
+    def LOG_FILE(self): return self._config.get('log_file', 'jinni.log')
+
+    # Performance
+    @property
+    def MAX_WORKERS(self): return self._config.get('max_workers', 4)
+    
+    @property
+    def CACHE_ENABLED(self): return self._config.get('cache_enabled', True)
+    
+    @property
+    def CACHE_TTL(self): return self._config.get('cache_ttl', 300)
+
+    # Surakshit API Keys (Yeh seedhe aapki .env file se load karega)
+    @property
+    def GEMINI_API_KEY(self): return os.getenv('GEMINI_API_KEY', '')
+    
+    @property
+    def NSE_API_KEY(self): return os.getenv('NSE_API_KEY', '')
+    
+    @property
+    def BSE_API_KEY(self): return os.getenv('BSE_API_KEY', '')
+
+    # DB URL Method
+    def get_db_url(self):
+        if self.DB_TYPE == 'postgres':
+            return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        return f"sqlite:///{self.DB_PATH}"
+
+# Instance create karein jo baaki code me use hoga
 config = Config()
