@@ -1,0 +1,133 @@
+import os
+import yaml
+
+class Config:
+    def __init__(self, config_path="config.yaml"):
+        # 1. Check karein ki YAML file maujood hai ya nahi
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"Config file nahi mili: {config_path}")
+            
+        # 2. YAML file ko read aur load karein
+        with open(config_path, 'r') as file:
+            self._config = yaml.safe_load(file)
+
+    # Application Settings
+    @property
+    def APP_NAME(self): return self._config.get('app_name', 'Jinni Indian Stock Market AI')
+    
+    @property
+    def VERSION(self): return self._config.get('version', '1.0.0')
+    
+    @property
+    def DEBUG(self): return self._config.get('debug', False)
+
+    # Data Fetching
+    @property
+    def NSE_BASE_URL(self): return self._config.get('nse_base_url', 'https://nseindia.com')
+    
+    @property
+    def BSE_BASE_URL(self): return self._config.get('bse_base_url', 'https://bseindia.com')
+    
+    @property
+    def DATA_FETCH_INTERVAL(self): return self._config.get('data_fetch_interval', 60)
+
+    # Machine Learning
+    @property
+    def ML_MODEL_PATH(self): return self._config.get('ml_model_path', 'models/')
+    
+    @property
+    def LSTM_UNITS(self): return self._config.get('lstm_units', 128)
+    
+    @property
+    def LSTM_SEQUENCE_LENGTH(self): return self._config.get('lstm_sequence_length', 60)
+    
+    @property
+    def GRU_UNITS(self): return self._config.get('gru_units', 128)
+    
+    @property
+    def BATCH_SIZE(self): return self._config.get('batch_size', 32)
+    
+    @property
+    def EPOCHS(self): return self._config.get('epochs', 50)
+
+    # Online Learning
+    @property
+    def ONLINE_LEARNING_ENABLED(self): return self._config.get('online_learning_enabled', True)
+    
+    @property
+    def INCREMENTAL_UPDATE_INTERVAL(self): return self._config.get('incremental_update_interval', 1)
+    
+    @property
+    def ACCURACY_THRESHOLD(self): return self._config.get('accuracy_threshold', 0.85)
+
+    # Database
+    @property
+    def DB_TYPE(self): return self._config.get('db_type', 'sqlite')
+    
+    @property
+    def DB_PATH(self): return self._config.get('db_path', 'jinni_data.db')
+    
+    @property
+    def POSTGRES_HOST(self): return self._config.get('postgres_host', 'localhost')
+    
+    @property
+    def POSTGRES_PORT(self): return self._config.get('postgres_port', 5432)
+    
+    @property
+    def POSTGRES_USER(self): return self._config.get('postgres_user', 'jinni')
+    
+    @property
+    def POSTGRES_PASSWORD(self): return self._config.get('postgres_password', '')
+    
+    @property
+    def POSTGRES_DB(self): return self._config.get('postgres_db', 'jinni_db')
+
+    # Dashboard
+    @property
+    def DASHBOARD_PORT(self): return self._config.get('dashboard_port', 8501)
+    
+    @property
+    def DASHBOARD_UPDATE_INTERVAL(self): return self._config.get('dashboard_update_interval', 5)
+
+    # Analytics (Yahan se automatic list aayegi)
+    @property
+    def TECHNICAL_INDICATORS(self): return self._config.get('technical_indicators', ['SMA', 'EMA', 'RSI', 'MACD', 'BB'])
+    
+    @property
+    def RISK_ANALYSIS_ENABLED(self): return self._config.get('risk_analysis_enabled', True)
+    
+    @property
+    def PORTFOLIO_OPTIMIZATION_ENABLED(self): return self._config.get('portfolio_optimization_enabled', True)
+
+    # Logging
+    @property
+    def LOG_LEVEL(self): return self._config.get('log_level', 'INFO')
+    
+    @property
+    def LOG_FILE(self): return self._config.get('log_file', 'jinni.log')
+
+    # Performance
+    @property
+    def MAX_WORKERS(self): return self._config.get('max_workers', 4)
+    
+    @property
+    def CACHE_ENABLED(self): return self._config.get('cache_enabled', True)
+    
+    @property
+    def CACHE_TTL(self): return self._config.get('cache_ttl', 300)
+
+    # API Keys
+    @property
+    def NSE_API_KEY(self): return self._config.get('nse_api_key', '')
+    
+    @property
+    def BSE_API_KEY(self): return self._config.get('bse_api_key', '')
+
+    # DB URL Method
+    def get_db_url(self):
+        if self.DB_TYPE == 'postgres':
+            return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        return f"sqlite:///{self.DB_PATH}"
+
+# Instance create karein
+config = Config()
