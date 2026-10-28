@@ -115,8 +115,11 @@ class Config:
     
     @property
     def CACHE_TTL(self): return self._config.get('cache_ttl', 300)
+    
+   
 
     # API Keys
+    
     @property
     def NSE_API_KEY(self): return self._config.get('nse_api_key', '')
     
